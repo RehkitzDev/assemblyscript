@@ -160,6 +160,10 @@ export declare function offsetof<T>(fieldName?: string): usize; // | u32 / u64
 @builtin
 export declare function idof<T>(): u32;
 
+// @ts-ignore: decorator
+@builtin
+export declare function familyof<T>(): u32;
+
 // @ts-ignore
 @builtin
 export declare function nameof<T>(): string;

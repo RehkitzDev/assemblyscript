@@ -455,6 +455,8 @@ export class Program extends DiagnosticEmitter {
   nativeFile!: File;
   /** Next class id. */
   nextClassId: u32 = 0;
+  /** Next family id. */
+  nextFamilyId: u32 = 0;
   /** Next signature id. */
   nextSignatureId: i32 = 0;
   /** An indicator if the program has been initialized. */
@@ -474,6 +476,8 @@ export class Program extends DiagnosticEmitter {
   wrapperClasses: Map<Type,Class> = new Map();
   /** Managed classes contained in the program, by id. */
   managedClasses: Map<i32,Class> = new Map();
+  /** unmanaged classes contained in the program, by id. */
+  unmanagedClassNames: Map<string,i32> = new Map();
   /** A set of unique function signatures contained in the program, by id. */
   uniqueSignatures: Signature[] = new Array<Signature>(0);
 
@@ -4210,6 +4214,10 @@ export class Class extends TypedElement {
       let id = program.nextClassId++;
       this._id = id;
       program.managedClasses.set(id, this);
+    }
+    else{
+      let id = program.nextFamilyId++;
+      program.unmanagedClassNames.set(this.internalName, id);
     }
 
     // apply pre-checked instance-specific contextual type arguments

@@ -188,6 +188,7 @@ export namespace BuiltinNames {
   export const unchecked = "~lib/builtins/unchecked";
   export const instantiate = "~lib/builtins/instantiate";
   export const idof = "~lib/builtins/idof";
+  export const familyof = "~lib/builtins/familyof";
 
   export const i8 = "~lib/builtins/i8";
   export const i16 = "~lib/builtins/i16";
@@ -1084,6 +1085,36 @@ function builtin_idof(ctx: BuiltinContext): ExpressionRef {
   return module.unreachable();
 }
 builtins.set(BuiltinNames.idof, builtin_idof);
+
+
+function builtin_familyof(ctx: BuiltinContext): ExpressionRef {
+    var compiler = ctx.compiler;
+    var module = compiler.module;
+    var program = compiler.program;
+    var type = evaluateConstantType(ctx);
+    compiler.currentType = Type.u32;
+    if (!type) return module.unreachable();
+    let signatureReference = type.getSignature();
+    if (signatureReference) {
+        return module.i32(signatureReference.id);
+    }
+    let classReference = type.getClassOrWrapper(compiler.program);
+    
+    if(classReference !== null){
+      return module.i32(program.unmanagedClassNames.get(classReference.internalName) as i32);
+    }
+
+    compiler.error(
+        DiagnosticCode.Operation_0_cannot_be_applied_to_type_1,
+        ctx.reportNode.typeArgumentsRange,
+        "familyof",
+        type.toString()
+    );
+    return module.unreachable();
+}
+
+// in Transform
+builtins.set(BuiltinNames.familyof, builtin_familyof);
 
 // === Math ===================================================================================
 
